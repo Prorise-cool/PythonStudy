@@ -1,11 +1,10 @@
 """
 任务服务模块，提供业务逻辑层功能。
 负责处理任务相关的业务规则和操作。
+# sqlite_practice/services/task_service.py
 """
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
-import sqlite3
-
 from models.task import Task
 from repositories.task_repository import TaskRepository
 
@@ -67,7 +66,7 @@ class TaskService:
         )
         
         # 保存任务
-        return self.task_repository.insert(task)
+        return self.task_repository.insert_task(task)
     
     def create_tasks_batch(self, task_data_list: List[Dict[str, Any]]) -> Optional[int]:
         """批量创建任务
@@ -118,7 +117,7 @@ class TaskService:
             bool: 更新是否成功
         """
         # 查找现有任务
-        task = self.task_repository.find_by_id(task_id)
+        task = self.task_repository.find_task_by_id(task_id)
         if not task:
             print(f"[Error] 未找到要更新的任务 ID={task_id}")
             return False
@@ -131,7 +130,7 @@ class TaskService:
                 print(f"[Warning] 忽略未知字段 '{key}'")
                 
         # 保存更新
-        return self.task_repository.update(task)
+        return self.task_repository.update_task(task)
     
     def complete_task(self, task_id: int) -> bool:
         """将任务标记为已完成
@@ -153,7 +152,7 @@ class TaskService:
         Returns:
             bool: 删除是否成功
         """
-        return self.task_repository.delete(task_id)
+        return self.task_repository.delete_task(task_id)
     
     def get_task(self, task_id: int) -> Optional[Task]:
         """获取指定ID的任务
@@ -164,7 +163,7 @@ class TaskService:
         Returns:
             Task: 任务对象，未找到则返回None
         """
-        return self.task_repository.find_by_id(task_id)
+        return self.task_repository.find_task_by_id(task_id)
     
     def get_all_tasks(self) -> List[Task]:
         """获取所有任务
@@ -172,7 +171,7 @@ class TaskService:
         Returns:
             list: 任务对象列表
         """
-        return self.task_repository.find_all()
+        return self.task_repository.find_all_tasks()
     
     def get_tasks_by_priority(self, priority: int) -> List[Task]:
         """获取指定优先级的任务
@@ -202,7 +201,7 @@ class TaskService:
         today = datetime.now().strftime('%Y-%m-%d')
         
         # 获取所有任务
-        all_tasks = self.task_repository.find_all()
+        all_tasks = self.task_repository.find_all_tasks()
         
         # 筛选出截止日期已过且未完成的任务
         overdue_tasks = []
@@ -237,7 +236,7 @@ class TaskService:
         today_str = today.strftime('%Y-%m-%d')
         
         # 获取所有任务
-        all_tasks = self.task_repository.find_all()
+        all_tasks = self.task_repository.find_all_tasks()
         
         # 筛选出在指定日期范围内到期的任务
         due_tasks = []
